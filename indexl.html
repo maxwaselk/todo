@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista Zakupów PWA</title>
+    <link rel="stylesheet" href="/todo/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="manifest" href="/todo/manifest.json">
+    <link rel="icon" type="image/png" href="/todo/icon-192x192.png">
+    <meta name="theme-color" content="#3498db">
+</head>
+<body>
+    <div class="container">
+        <h1>Lista Zakupów PWA</h1>
+        <form id="shopping-form">
+            <input type="text" id="item-input" placeholder="Dodaj produkt..." required>
+            <button type="submit" id="add-button">Dodaj</button>
+        </form>
+        <ul id="shopping-list"></ul>
+    </div>
+    <div id="notification-container"></div>
+    <script src="/todo/script.js"></script>
+</body>
+</html>
