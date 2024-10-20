@@ -1,99 +1,112 @@
-const shoppingForm = document.getElementById('shopping-form');
+const form = document.getElementById('shopping-form');
 const itemInput = document.getElementById('item-input');
+const categoryInput = document.getElementById('category-input');
 const shoppingList = document.getElementById('shopping-list');
+const filterBoughtButton = document.getElementById('filter-bought');
+const sortButton = document.getElementById('sort-items');
 const notificationContainer = document.getElementById('notification-container');
 
 let items = JSON.parse(localStorage.getItem('shoppingItems')) || [];
 
-function renderList() {
+document.addEventListener('DOMContentLoaded', displayItems);
+
+form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const itemName = itemInput.value.trim();
+    const itemCategory = categoryInput.value.trim() || 'Inne';
+
+    if (itemName) {
+        addItem(itemName, itemCategory);
+        itemInput.value = '';
+        categoryInput.value = '';
+        showNotification('Produkt dodany!');
+    }
+});
+
+function addItem(name, category) {
+    const newItem = {
+        id: Date.now(),
+        name,
+        category,
+        bought: false
+    };
+
+    items.push(newItem);
+    updateLocalStorage();
+    displayItems();
+}
+
+function displayItems() {
     shoppingList.innerHTML = '';
-    items.forEach((item, index) => {
+
+    items.forEach(item => {
         const li = document.createElement('li');
-        li.className = `shopping-item ${item.completed ? 'completed' : ''}`;
+        li.classList.add('flex', 'justify-between', 'items-center', 'p-4', 'bg-gray-100', 'dark:bg-gray-800', 'rounded-lg', 'shadow-md', 'transition-all', 'duration-500');
+        
         li.innerHTML = `
-            <span>${item.name}</span>
-            <button class="remove-button" data-index="${index}"><i class="fas fa-times"></i></button>
+            <span class="item-name ${item.bought ? 'line-through text-gray-500 dark:text-gray-400' : ''}">${item.name}</span>
+            <span class="category text-sm text-gray-400">(${item.category})</span>
+            <div class="actions flex space-x-4">
+                <button class="toggle-btn bg-blue-500 text-white p-2 rounded-full transition duration-300 ease-in-out hover:bg-blue-600" onclick="toggleBought(${item.id})">
+                    <i class="fas fa-check"></i>
+                </button>
+                <button class="remove-btn bg-red-500 text-white p-2 rounded-full transition duration-300 ease-in-out hover:bg-red-600" onclick="removeItem(${item.id})">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
         `;
+
         shoppingList.appendChild(li);
     });
-    saveToLocalStorage();
 }
 
-function addItem(e) {
-    e.preventDefault();
-    const newItem = itemInput.value.trim();
-    if (newItem) {
-        items.push({ name: newItem, completed: false });
-        itemInput.value = '';
-        renderList();
-        showNotification(`Dodano produkt: ${newItem}`, 'success');
-    }
+function toggleBought(id) {
+    items = items.map(item => item.id === id ? { ...item, bought: !item.bought } : item);
+    updateLocalStorage();
+    showNotification('Produkt przeniesiony do koszyka');
+    displayItems();
 }
 
-function removeItem(index) {
-    const removedItem = items[index].name;
-    items.splice(index, 1);
-    renderList();
-    showNotification(`Usunięto produkt: ${removedItem}`, 'error');
+function removeItem(id) {
+    items = items.filter(item => item.id !== id);
+    updateLocalStorage();
+    showNotification('Produkt usunięty');
+    displayItems();
 }
 
-function toggleCompleted(index) {
-    items[index].completed = !items[index].completed;
-    const listItem = shoppingList.children[index];
-    listItem.classList.toggle('completed');
-    if (items[index].completed) {
-        listItem.querySelector('span').classList.add('animate-strikethrough');
-        showNotification(`Dodano do koszyka: ${items[index].name}`, 'info');
-    } else {
-        listItem.querySelector('span').classList.remove('animate-strikethrough');
-    }
-    saveToLocalStorage();
-}
-
-function saveToLocalStorage() {
-    localStorage.setItem('shoppingItems', JSON.stringify(items));
-}
-
-function showNotification(message, type) {
+function showNotification(message) {
     const notification = document.createElement('div');
-    notification.className = `notification ${type}`;
+    notification.className = 'bg-green-500 text-white p-4 rounded-md shadow-md animate-slide-in-right';
     notification.textContent = message;
     notificationContainer.appendChild(notification);
 
     setTimeout(() => {
-        notification.classList.add('show');
-    }, 10);
-
-    setTimeout(() => {
-        notification.classList.remove('show');
-        setTimeout(() => {
-            notificationContainer.removeChild(notification);
-        }, 300);
-    }, 3000);
+        notification.classList.add('opacity-0');
+        setTimeout(() => notification.remove(), 500); // Usuwamy po animacji
+    }, 2000);
 }
 
-shoppingForm.addEventListener('submit', addItem);
-shoppingList.addEventListener('click', (e) => {
-    if (e.target.classList.contains('remove-button') || e.target.closest('.remove-button')) {
-        const index = e.target.closest('.remove-button').getAttribute('data-index');
-        removeItem(index);
-    } else if (e.target.tagName === 'SPAN') {
-        const index = Array.from(shoppingList.children).indexOf(e.target.parentElement);
-        toggleCompleted(index);
-    }
+function updateLocalStorage() {
+    localStorage.setItem('shoppingItems', JSON.stringify(items));
+}
+
+filterBoughtButton.addEventListener('click', () => {
+    const boughtItems = items.filter(item => item.bought);
+    shoppingList.innerHTML = '';
+    boughtItems.forEach(item => {
+        const li = document.createElement('li');
+        li.classList.add('flex', 'justify-between', 'items-center', 'p-4', 'bg-gray-100', 'dark:bg-gray-800', 'rounded-lg', 'shadow-md', 'transition-all', 'duration-500');
+        
+        li.innerHTML = `
+            <span class="item-name line-through text-gray-500 dark:text-gray-400">${item.name}</span>
+            <span class="category text-sm text-gray-400">(${item.category})</span>
+        `;
+        shoppingList.appendChild(li);
+    });
 });
 
-renderList();
-
-// Na końcu pliku zaktualizuj:
-if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/todo/service-worker.js')
-            .then(registration => {
-                console.log('Service Worker zarejestrowany pomyślnie:', registration);
-            })
-            .catch(error => {
-                console.log('Błąd rejestracji Service Worker:', error);
-            });
-    });
-}
+sortButton.addEventListener('click', () => {
+    items.sort((a, b) => a.name.localeCompare(b.name));
+    updateLocalStorage();
+    displayItems();
+});
