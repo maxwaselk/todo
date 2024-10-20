@@ -44,8 +44,8 @@ function displayItems() {
         li.classList.add('flex', 'justify-between', 'items-center', 'p-4', 'bg-gray-100', 'dark:bg-gray-800', 'rounded-lg', 'shadow-md', 'transition-all', 'duration-500');
         
         li.innerHTML = `
-            <span class="item-name ${item.bought ? 'line-through text-gray-500 dark:text-gray-400' : ''}">${item.name}</span>
-            <span class="category text-sm text-gray-400">(${item.category})</span>
+            <span class="item-name ${item.bought ? 'line-through text-gray-500 dark:text-gray-400' : 'text-gray-800 dark:text-gray-200'}">${item.name}</span>
+            <span class="category text-sm text-gray-500 dark:text-gray-400">(${item.category})</span>
             <div class="actions flex space-x-4">
                 <button class="toggle-btn bg-blue-500 text-white p-2 rounded-full transition duration-300 ease-in-out hover:bg-blue-600" onclick="toggleBought(${item.id})">
                     <i class="fas fa-check"></i>
@@ -99,7 +99,7 @@ filterBoughtButton.addEventListener('click', () => {
         
         li.innerHTML = `
             <span class="item-name line-through text-gray-500 dark:text-gray-400">${item.name}</span>
-            <span class="category text-sm text-gray-400">(${item.category})</span>
+            <span class="category text-sm text-gray-500 dark:text-gray-400">(${item.category})</span>
         `;
         shoppingList.appendChild(li);
     });
