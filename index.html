@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Twoja lista zakupów PWA</title>
+    <title>Twoja lista zakupów</title>
     <!-- Import Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="manifest" href="/todo/manifest.json">
@@ -28,7 +28,7 @@
         <h1 class="text-5xl font-bold animate-pulse bg-gradient-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent">
             Twoja lista zakupów
         </h1>
-        <button id="enter-button" class="mt-10 bg-green-500 text-white py-2 px-8 rounded-full shadow-lg hover:bg-green-600 transition-all duration-300">
+        <button id="enter-button" class="mt-10 bg-green-500 text-white py-2 px-8 rounded-full shadow-lg hover:bg-green-600 transition-all duration-300 hover:scale-105">
             Wchodzę
         </button>
     </div>
@@ -48,11 +48,15 @@
     </div>
 
     <!-- Modal do dodawania produktów -->
-    <div id="modal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center">
-        <div class="bg-white p-6 rounded-lg shadow-2xl">
+    <div id="modal" class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-md hidden flex items-center justify-center">
+        <div class="bg-white p-6 rounded-lg shadow-2xl relative">
+            <!-- Przycisk "X" do zamykania modalu -->
+            <button id="close-modal" class="absolute top-3 right-3 text-gray-500 hover:text-gray-700 transition">
+                <i class="fas fa-times text-xl"></i>
+            </button>
             <input type="text" id="product-input" class="border border-gray-300 p-2 rounded-lg w-full" placeholder="Dodaj produkt">
-            <button id="confirm-add" class="mt-4 bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600 transition">
-                Dodaj
+            <button id="confirm-add" class="mt-4 bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600 transition flex items-center justify-center">
+                <i class="fas fa-check mr-2"></i> Dodaj
             </button>
         </div>
     </div>
