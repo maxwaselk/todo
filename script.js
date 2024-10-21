@@ -3,6 +3,7 @@ const startScreen = document.getElementById('start-screen');
 const mainScreen = document.getElementById('main-screen');
 const addButton = document.getElementById('add-button');
 const modal = document.getElementById('modal');
+const closeModal = document.getElementById('close-modal');
 const confirmAdd = document.getElementById('confirm-add');
 const productInput = document.getElementById('product-input');
 const shoppingList = document.getElementById('shopping-list');
@@ -15,6 +16,11 @@ enterButton.addEventListener('click', () => {
     startScreen.classList.add('hidden');
     mainScreen.classList.remove('hidden');
     displayItems();
+});
+
+// Zamykanie modalu po kliknięciu na "X"
+closeModal.addEventListener('click', () => {
+    modal.classList.add('hidden');
 });
 
 // Wyświetlanie listy produktów
@@ -69,10 +75,10 @@ function toggleBought(id) {
     displayItems();
 }
 
-// Powiadomienia
+// Powiadomienia z animacją
 function showNotification(message, bgColor) {
     const notification = document.createElement('div');
-    notification.className = `${bgColor} text-white p-4 rounded-md shadow-md animate-slide-in-right`;
+    notification.className = `${bgColor} text-white p-4 rounded-md shadow-md animate-slide-down transition-opacity`;
     notification.textContent = message;
     notificationContainer.appendChild(notification);
 
@@ -85,4 +91,13 @@ function showNotification(message, bgColor) {
 // Aktualizacja localStorage
 function updateLocalStorage() {
     localStorage.setItem('shoppingItems', JSON.stringify(items));
+}
+
+// Animowany efekt hologramu w zależności od ruchu telefonu (na urządzeniach mobilnych)
+if (window.DeviceOrientationEvent) {
+    window.addEventListener('deviceorientation', event => {
+        const x = event.gamma; // Poziome przechylenie
+        const y = event.beta; // Pionowe przechylenie
+        document.querySelector('.hologram').style.backgroundPosition = `${x + 90}% ${y + 90}%`;
+    });
 }
