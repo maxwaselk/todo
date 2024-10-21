@@ -1,5 +1,5 @@
 {
-    "name": "Lista Zakupów",
+    "name": "Lista Zakupów PWA",
     "short_name": "Zakupy",
     "description": "Prosta aplikacja do zarządzania listą zakupów",
     "start_url": "/todo/",
