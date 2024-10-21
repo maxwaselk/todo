@@ -1,82 +1,78 @@
-const form = document.getElementById('shopping-form');
-const itemInput = document.getElementById('item-input');
-const categoryInput = document.getElementById('category-input');
+const enterButton = document.getElementById('enter-button');
+const startScreen = document.getElementById('start-screen');
+const mainScreen = document.getElementById('main-screen');
+const addButton = document.getElementById('add-button');
+const modal = document.getElementById('modal');
+const confirmAdd = document.getElementById('confirm-add');
+const productInput = document.getElementById('product-input');
 const shoppingList = document.getElementById('shopping-list');
-const filterBoughtButton = document.getElementById('filter-bought');
-const sortButton = document.getElementById('sort-items');
 const notificationContainer = document.getElementById('notification-container');
 
 let items = JSON.parse(localStorage.getItem('shoppingItems')) || [];
 
-document.addEventListener('DOMContentLoaded', displayItems);
-
-form.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const itemName = itemInput.value.trim();
-    const itemCategory = categoryInput.value.trim() || 'Inne';
-
-    if (itemName) {
-        addItem(itemName, itemCategory);
-        itemInput.value = '';
-        categoryInput.value = '';
-        showNotification('Produkt dodany!');
-    }
+// Przejście na główną stronę po kliknięciu "Wchodzę"
+enterButton.addEventListener('click', () => {
+    startScreen.classList.add('hidden');
+    mainScreen.classList.remove('hidden');
+    displayItems();
 });
 
-function addItem(name, category) {
-    const newItem = {
-        id: Date.now(),
-        name,
-        category,
-        bought: false
-    };
-
-    items.push(newItem);
-    updateLocalStorage();
-    displayItems();
-}
-
+// Wyświetlanie listy produktów
 function displayItems() {
     shoppingList.innerHTML = '';
-
     items.forEach(item => {
         const li = document.createElement('li');
         li.classList.add('flex', 'justify-between', 'items-center', 'p-4', 'bg-gray-100', 'dark:bg-gray-800', 'rounded-lg', 'shadow-md', 'transition-all', 'duration-500');
-        
         li.innerHTML = `
-            <span class="item-name ${item.bought ? 'line-through text-gray-500 dark:text-gray-400' : 'text-gray-800 dark:text-gray-200'}">${item.name}</span>
-            <span class="category text-sm text-gray-500 dark:text-gray-400">(${item.category})</span>
-            <div class="actions flex space-x-4">
-                <button class="toggle-btn bg-blue-500 text-white p-2 rounded-full transition duration-300 ease-in-out hover:bg-blue-600" onclick="toggleBought(${item.id})">
-                    <i class="fas fa-check"></i>
-                </button>
-                <button class="remove-btn bg-red-500 text-white p-2 rounded-full transition duration-300 ease-in-out hover:bg-red-600" onclick="removeItem(${item.id})">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
+            <span class="${item.bought ? 'line-through text-gray-500 dark:text-gray-400' : 'text-gray-800 dark:text-gray-200'}">${item.name}</span>
+            <button class="remove-btn text-red-500 hover:text-red-600 transition" onclick="removeItem(${item.id})">x</button>
         `;
-
+        li.addEventListener('click', () => toggleBought(item.id));
         shoppingList.appendChild(li);
     });
 }
 
-function toggleBought(id) {
-    items = items.map(item => item.id === id ? { ...item, bought: !item.bought } : item);
-    updateLocalStorage();
-    showNotification('Produkt przeniesiony do koszyka');
-    displayItems();
-}
+// Dodanie nowego produktu
+addButton.addEventListener('click', () => {
+    modal.classList.remove('hidden');
+});
 
+confirmAdd.addEventListener('click', () => {
+    const productName = productInput.value.trim();
+    if (productName) {
+        const newItem = {
+            id: Date.now(),
+            name: productName,
+            bought: false
+        };
+        items.push(newItem);
+        updateLocalStorage();
+        displayItems();
+        showNotification('Produkt dodany!', 'bg-green-500');
+    }
+    productInput.value = '';
+    modal.classList.add('hidden');
+});
+
+// Usuwanie produktu
 function removeItem(id) {
     items = items.filter(item => item.id !== id);
     updateLocalStorage();
-    showNotification('Produkt usunięty');
+    displayItems();
+    showNotification('Produkt usunięty!', 'bg-red-500');
+}
+
+// Oznaczanie produktu jako kupiony
+function toggleBought(id) {
+    items = items.map(item => item.id === id ? { ...item, bought: !item.bought } : item);
+    updateLocalStorage();
     displayItems();
 }
 
-function showNotification(message) {
+// Powiadomienia
+function showNotification(message, bgColor) {
     const notification = document.createElement('div');
-    notification.className = 'bg-green-500 text-white p-4 rounded-md shadow-md animate-slide-in-right';
+    notification.className = `${bgColor} text-white p-4 rounded-md shadow-md animate-slide-in-right`;
     notification.textContent = message;
     notificationContainer.appendChild(notification);
 
@@ -86,27 +82,7 @@ function showNotification(message) {
     }, 2000);
 }
 
+// Aktualizacja localStorage
 function updateLocalStorage() {
     localStorage.setItem('shoppingItems', JSON.stringify(items));
 }
-
-filterBoughtButton.addEventListener('click', () => {
-    const boughtItems = items.filter(item => item.bought);
-    shoppingList.innerHTML = '';
-    boughtItems.forEach(item => {
-        const li = document.createElement('li');
-        li.classList.add('flex', 'justify-between', 'items-center', 'p-4', 'bg-gray-100', 'dark:bg-gray-800', 'rounded-lg', 'shadow-md', 'transition-all', 'duration-500');
-        
-        li.innerHTML = `
-            <span class="item-name line-through text-gray-500 dark:text-gray-400">${item.name}</span>
-            <span class="category text-sm text-gray-500 dark:text-gray-400">(${item.category})</span>
-        `;
-        shoppingList.appendChild(li);
-    });
-});
-
-sortButton.addEventListener('click', () => {
-    items.sort((a, b) => a.name.localeCompare(b.name));
-    updateLocalStorage();
-    displayItems();
-});
