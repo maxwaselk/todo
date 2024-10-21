@@ -3,24 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lista Zakupów</title>
+    <title>Twoja lista zakupów</title>
     <!-- Import Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            darkMode: 'media', // Automatyczny tryb ciemny na podstawie preferencji systemu
-        }
-    </script>
     <link rel="manifest" href="/todo/manifest.json">
     <link rel="icon" type="image/png" href="/todo/icon-192x192.png">
     <meta name="theme-color" content="#3498db">
-
     <!-- Rejestracja service workera -->
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('/todo/service-worker.js').then(registration => {
-                    console.log('Service Worker zarejestrowany z sukcesem:', registration.scope);
+                    console.log('Service Worker zarejestrowany:', registration.scope);
                 }).catch(error => {
                     console.log('Rejestracja Service Workera nie powiodła się:', error);
                 });
@@ -28,34 +22,44 @@
         }
     </script>
 </head>
-<body class="min-h-screen bg-gradient-to-r from-blue-300 to-green-300 dark:from-gray-800 dark:to-gray-900 flex items-center justify-center">
-    <div class="container bg-white dark:bg-gray-700 shadow-2xl rounded-lg p-8 max-w-lg">
-        <h1 class="hologram text-4xl font-bold text-center mb-8 bg-gradient-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent animate-pulse" id="title">Lista Zakupów</h1>
-
-        <!-- Powiadomienia -->
-        <div id="notification-container" class="fixed top-4 right-4 space-y-4"></div>
-
-        <!-- Filtruj i sortuj -->
-        <div class="filter-sort flex justify-between mb-4">
-            <button id="filter-bought" class="filter-btn bg-blue-500 text-white px-4 py-2 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105 hover:bg-blue-600">
-                Pokaż Kupione
-            </button>
-            <button id="sort-items" class="sort-btn bg-green-500 text-white px-4 py-2 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105 hover:bg-green-600">
-                Sortuj Alfabetycznie
-            </button>
-        </div>
-
-        <form id="shopping-form" class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-            <input type="text" id="item-input" class="col-span-2 p-2 border border-gray-300 dark:border-gray-600 rounded-lg" placeholder="Dodaj produkt..." required>
-            <input type="text" id="category-input" class="col-span-2 sm:col-span-1 p-2 border border-gray-300 dark:border-gray-600 rounded-lg" placeholder="Dodaj kategorię (opcjonalnie)">
-            <button type="submit" id="add-button" class="col-span-2 sm:col-span-1 bg-purple-500 text-white px-4 py-2 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105 hover:bg-purple-600">
-                <i class="fas fa-plus"></i> Dodaj
-            </button>
-        </form>
-
-        <ul id="shopping-list" class="space-y-4"></ul>
+<body class="bg-blue-200 dark:bg-gray-800 flex items-center justify-center min-h-screen">
+    <!-- Strona startowa -->
+    <div id="start-screen" class="text-center">
+        <h1 class="text-5xl font-bold animate-pulse bg-gradient-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent">
+            Twoja lista zakupów
+        </h1>
+        <button id="enter-button" class="mt-10 bg-green-500 text-white py-2 px-8 rounded-full shadow-lg hover:bg-green-600 transition-all duration-300">
+            Wchodzę
+        </button>
     </div>
 
-    <script src="/todo/script.js"></script>
+    <!-- Główna część aplikacji (początkowo ukryta) -->
+    <div id="main-screen" class="hidden flex flex-col items-center justify-center w-full h-full">
+        <h1 class="text-4xl font-bold hologram bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-blue-500 animate-pulse">
+            Lista zakupów
+        </h1>
+        <p class="text-xl mt-4 mb-8">Twoja lista zakupów:</p>
+        <ul id="shopping-list" class="w-full max-w-md"></ul>
+
+        <!-- Przycisk do dodawania produktu -->
+        <button id="add-button" class="fixed bottom-10 right-10 bg-purple-500 text-white p-5 rounded-full shadow-lg hover:bg-purple-600 transition transform hover:scale-110">
+            <i class="fas fa-plus text-2xl"></i>
+        </button>
+    </div>
+
+    <!-- Modal do dodawania produktów -->
+    <div id="modal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center">
+        <div class="bg-white p-6 rounded-lg shadow-2xl">
+            <input type="text" id="product-input" class="border border-gray-300 p-2 rounded-lg w-full" placeholder="Dodaj produkt">
+            <button id="confirm-add" class="mt-4 bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600 transition">
+                Dodaj
+            </button>
+        </div>
+    </div>
+
+    <!-- Powiadomienia -->
+    <div id="notification-container" class="fixed top-4 right-4 space-y-4"></div>
+
+    <script src="script.js"></script>
 </body>
 </html>
