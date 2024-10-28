@@ -1,48 +1,39 @@
-const CACHE_NAME = 'shopping-list-cache-v1';
-const urlsToCache = [
+const CACHE_NAME = 'cache-v1';
+const ASSETS = [
     '/todo/',
     '/todo/index.html',
-    '/todo/manifest.json',
+    '/todo/styles.css',
     '/todo/script.js',
-    '/todo/icon-192x192.png',
-    '/todo/icon-512x512.png'
+    'https://cdn.jsdelivr.net/npm/daisyui@3.9.4/dist/full.css',
+    'https://unpkg.com/lucide@latest'
 ];
 
-// Instalacja service workera
-self.addEventListener('install', event => {
+// Instalacja Service Workera
+self.addEventListener('install', (event) => {
     event.waitUntil(
-        caches.open(CACHE_NAME)
-            .then(cache => {
-                console.log('Cache otwarty');
-                return cache.addAll(urlsToCache);
-            })
+        caches.open(CACHE_NAME).then((cache) => {
+            return cache.addAll(ASSETS);
+        })
     );
 });
 
-// Obsługa fetch - zwracamy z cache, jeśli dostępny, inaczej pobieramy z sieci
-self.addEventListener('fetch', event => {
+// Obsługa zapytań sieciowych
+self.addEventListener('fetch', (event) => {
     event.respondWith(
-        caches.match(event.request)
-            .then(response => {
-                if (response) {
-                    return response; // Zwracamy dane z cache
-                }
-                return fetch(event.request); // Pobieramy dane z sieci, jeśli nie ma w cache
-            })
+        caches.match(event.request).then((response) => {
+            return response || fetch(event.request);
+        })
     );
 });
 
-// Aktualizacja service workera - usuwanie starego cache
-self.addEventListener('activate', event => {
-    const cacheWhitelist = [CACHE_NAME];
+// Aktualizacja Service Workera
+self.addEventListener('activate', (event) => {
     event.waitUntil(
-        caches.keys().then(cacheNames => {
+        caches.keys().then((cacheNames) => {
             return Promise.all(
-                cacheNames.map(cacheName => {
-                    if (!cacheWhitelist.includes(cacheName)) {
-                        return caches.delete(cacheName); // Usuwamy stare cache, które nie są w białej liście
-                    }
-                })
+                cacheNames
+                    .filter((cacheName) => cacheName !== CACHE_NAME)
+                    .map((cacheName) => caches.delete(cacheName))
             );
         })
     );

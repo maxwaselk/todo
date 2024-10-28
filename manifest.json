@@ -1,20 +1,18 @@
 {
-    "name": "Lista Zakupów PWA",
+    "name": "Lista Zakupów",
     "short_name": "Zakupy",
-    "description": "Prosta aplikacja do zarządzania listą zakupów",
-    "start_url": "/todo/",
-    "scope": "/todo/",
+    "start_url": "/todo/index.html",
     "display": "standalone",
     "background_color": "#ffffff",
-    "theme_color": "#3498db",
+    "theme_color": "#3b82f6",
     "icons": [
         {
-            "src": "/todo/icon-192x192.png",
+            "src": "/todo/icons/icon-192x192.png",
             "sizes": "192x192",
             "type": "image/png"
         },
         {
-            "src": "/todo/icon-512x512.png",
+            "src": "/todo/icons/icon-512x512.png",
             "sizes": "512x512",
             "type": "image/png"
         }
